@@ -1,14 +1,21 @@
 ---
+- name: Gather OS specific variables.
+  include_vars: "{{ item }}"
+  with_first_found:
+      - "vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+      - "vars/{{ ansible_distribution }}.yml"
+      - "defaults/main.yml"
+
 - name: Ensure Pip is installed.
   package:
-    name: "{{ pip_package }}"
-    state: present
+      name: "{{ pip_package }}"
+      state: present
 
 - name: Ensure pip_install_packages are installed.
   pip:
-    name: "{{ item.name | default(item) }}"
-    version: "{{ item.version | default(omit) }}"
-    virtualenv: "{{ item.virtualenv | default(omit) }}"
-    state: "{{ item.state | default(omit) }}"
-    executable: "{{ pip_executable }}"
+      name: "{{ item.name | default(item) }}"
+      version: "{{ item.version | default(omit) }}"
+      virtualenv: "{{ item.virtualenv | default(omit) }}"
+      state: "{{ item.state | default(omit) }}"
+      executable: "{{ pip_executable }}"
   with_items: "{{ pip_install_packages }}"
